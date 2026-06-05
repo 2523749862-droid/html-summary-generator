@@ -1,8 +1,8 @@
 # HTML 文档生成器 Skill
 # HTML Document Generator Skill
 
-一个功能强大的 WorkBuddy Skill，用于生成精美的 HTML 文档。支持 8 种文档类型、12 种主题、丰富的动效和自定义功能。
-A powerful WorkBuddy Skill for generating beautiful HTML documents. Supports 8 document types, 12 themes, rich animations and custom features.
+一个功能强大的Agent   Skill，用于生成精美的 HTML 文档。支持 8 种文档类型、12 种主题、丰富的动效和自定义功能。
+A powerful Agent Skill for generating beautiful HTML documents. Supports 8 document types, 12 themes, rich animations and custom features.
 
 ---
 
