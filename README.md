@@ -1,61 +1,117 @@
 # HTML 文档生成器 Skill
+# HTML Document Generator Skill
 
 一个功能强大的 WorkBuddy Skill，用于生成精美的 HTML 文档。支持 8 种文档类型、12 种主题、丰富的动效和自定义功能。
+A powerful WorkBuddy Skill for generating beautiful HTML documents. Supports 8 document types, 12 themes, rich animations and custom features.
 
-## ✨ 特性
+---
 
-### 📄 8 种文档类型
-- 📋 项目总结 - 项目背景、目标完成情况、关键成果、问题与复盘
-- 📘 技术文档 - 架构设计、技术选型、接口说明、部署流程
-- 📊 汇报PPT - 封面、目录、核心内容、数据图表、总结
-- 📖 教程指南 - 前置条件、分步操作、注意事项、FAQ
-- 📈 数据报告 - 数据概览、趋势分析、对比分析、结论
-- ⚖️ 对比分析 - 对比维度、各方案详情、优劣评分、推荐
-- 🔄 流程文档 - 流程概述、流程图、角色职责、操作规范
-- 📝 会议纪要 - 会议信息、参会人员、议题讨论、待办跟踪
+## ✨ 特性 | Features
 
-### 🎨 12 种预设主题
-| 主题 | 主色调 | 背景色 | 适用场景 |
-|------|--------|--------|----------|
-| 银河 | `#7c3aed` | `#0d1117` 深色 | 科技、商务 |
-| 深海 | `#00e5ff` | `#0a1929` 深色 | 科技、金融 |
-| 薰衣草 | `#e040fb` | `#1a0e2e` 深色 | 时尚、美妆 |
-| 玫瑰 | `#ff1744` | `#2d0a1a` 深色 | 健康、公益 |
-| 黄金 | `#f0c040` | `#1a1508` 深色 | 奢华、高贵 |
-| 莫兰迪 | `#8b6f5e` | `#e8e0d8` 浅色 | 高级、艺术 |
-| 雪白 | `#2563eb` | `#f0f4f8` 浅色 | 正式、学术 |
-| 奶油 | `#b45309` | `#fef7e7` 浅色 | 温馨、生活 |
-| 薄荷 | `#059669` | `#ecfdf5` 浅色 | 清新、自然 |
-| 天空 | `#0369a1` | `#eef6ff` 浅色 | 简洁、专业 |
-| 洛可可 | `#be185d` | `#fdf0f5` 浅色 | 浪漫、古典 |
-| 敦煌 | `#c23b22` | `#faf5ef` 浅色 | 古朴、文化 |
+### 📄 8 种文档类型 | 8 Document Types
+- 📋 **项目总结 / Project Summary**
+  项目背景、目标完成情况、关键成果、问题与复盘
+  Project background, goal achievement, key results, issues & review
 
-### ✨ 动效系统
-- **11 种背景动效**：粒子飘浮、星空闪烁、雪花飘落、泡泡上升、网格连线、波浪流动、萤火虫、矩阵雨、星云漩涡、彩纸飘落、无动效
-- **9 种鼠标动效**：泛光跟随、拖尾光轨、星河轨迹、星星闪烁、彩虹光环、波纹扩散、磁性吸引、烟花点击、无动效
-- **10 种边框样式**：毛玻璃、霓虹发光、脉冲呼吸、渐变流动、闪烁微光、悬浮漂浮、霓虹闪烁、实线边框、虚线边框、双线边框
+- 📘 **技术文档 / Technical Document**
+  架构设计、技术选型、接口说明、部署流程
+  Architecture design, tech stack, API specs, deployment process
 
-### 🛠️ 自定义功能
+- 📊 **汇报PPT / Presentation PPT**
+  封面、目录、核心内容、数据图表、总结
+  Cover, table of contents, core content, charts, summary
+
+- 📖 **教程指南 / Tutorial Guide**
+  前置条件、分步操作、注意事项、FAQ
+  Prerequisites, step-by-step guide, notes, FAQ
+
+- 📈 **数据报告 / Data Report**
+  数据概览、趋势分析、对比分析、结论
+  Data overview, trend analysis, comparison, conclusion
+
+- ⚖️ **对比分析 / Comparison Analysis**
+  对比维度、各方案详情、优劣评分、推荐
+  Comparison dimensions, solution details, scoring, recommendation
+
+- 🔄 **流程文档 / Process Document**
+  流程概述、流程图、角色职责、操作规范
+  Process overview, flowchart, roles & responsibilities, SOP
+
+- 📝 **会议纪要 / Meeting Minutes**
+  会议信息、参会人员、议题讨论、待办跟踪
+  Meeting info, attendees, discussion, action items
+
+---
+
+### 🎨 12 种预设主题 | 12 Preset Themes
+
+| 主题 Theme | 主色调 Main Color | 背景色 Background | 适用场景 Use Case |
+|---|---|---|---|
+| 银河 Galaxy | `#7c3aed` | `#0d1117` 深色 Dark | 科技、商务 Tech, Business |
+| 深海 Deep Sea | `#00e5ff` | `#0a1929` 深色 Dark | 科技、金融 Tech, Finance |
+| 薰衣草 Lavender | `#e040fb` | `#1a0e2e` 深色 Dark | 时尚、美妆 Fashion, Beauty |
+| 玫瑰 Rose | `#ff1744` | `#2d0a1a` 深色 Dark | 健康、公益 Health, Charity |
+| 黄金 Gold | `#f0c040` | `#1a1508` 深色 Dark | 奢华、高贵 Luxury, Premium |
+| 莫兰迪 Morandi | `#8b6f5e` | `#e8e0d8` 浅色 Light | 高级、艺术 Premium, Art |
+| 雪白 Snow White | `#2563eb` | `#f0f4f8` 浅色 Light | 正式、学术 Formal, Academic |
+| 奶油 Cream | `#b45309` | `#fef7e7` 浅色 Light | 温馨、生活 Warm, Lifestyle |
+| 薄荷 Mint | `#059669` | `#ecfdf5` 浅色 Light | 清新、自然 Fresh, Nature |
+| 天空 Sky | `#0369a1` | `#eef6ff` 浅色 Light | 简洁、专业 Clean, Professional |
+| 洛可可 Rococo | `#be185d` | `#fdf0f5` 浅色 Light | 浪漫、古典 Romantic, Classic |
+| 敦煌 Dunhuang | `#c23b22` | `#faf5ef` 浅色 Light | 古朴、文化 Antique, Culture |
+
+---
+
+### ✨ 动效系统 | Animation System
+
+- **11 种背景动效 / 11 Background Animations**
+  粒子飘浮、星空闪烁、雪花飘落、泡泡上升、网格连线、波浪流动、萤火虫、矩阵雨、星云漩涡、彩纸飘落、无动效
+  Particle float, starry flicker, snowfall, bubble rise, grid connect, wave flow, firefly, matrix rain, nebula vortex, confetti, none
+
+- **9 种鼠标动效 / 9 Mouse Animations**
+  泛光跟随、拖尾光轨、星河轨迹、星星闪烁、彩虹光环、波纹扩散、磁性吸引、烟花点击、无动效
+  Glow follow, light trail, galaxy track, star blink, rainbow ring, ripple spread, magnetic attract, fireworks click, none
+
+- **10 种边框样式 / 10 Border Styles**
+  毛玻璃、霓虹发光、脉冲呼吸、渐变流动、闪烁微光、悬浮漂浮、霓虹闪烁、实线边框、虚线边框、双线边框
+  Frosted glass, neon glow, pulse breathe, gradient flow, shimmer glow, hover float, neon flash, solid line, dashed line, double line
+
+---
+
+### 🛠️ 自定义功能 | Custom Features
 - 色相轮调色器（360° Canvas 色相环）
-- 毛玻璃强度调节（0-40px）
-- 边框圆角调节（0-32px）
-- 卡片透明度调节（20%-95%）
+  Hue wheel color picker (360° Canvas hue ring)
+- 毛玻璃强度调节（0–40px）
+  Frosted glass intensity (0–40px)
+- 边框圆角调节（0–32px）
+  Border radius adjustment (0–32px)
+- 卡片透明度调节（20%–95%）
+  Card opacity adjustment (20%–95%)
 - 字体设置（9 种字体、字号、行高、标题字号）
+  Font settings (9 fonts, size, line height, heading size)
 - 添加段落功能（支持大段/小段、选择插入位置）
+  Add paragraph (long/short, choose insertion position)
 - 自动保存设置到 localStorage
+  Auto-save settings to localStorage
 - PDF 导出（A4 打印优化）
+  PDF export (A4 print optimized)
 
-## 📦 三种生成模式
+---
 
-| 模式 | 功能 | 文件大小 | 生成速度 | 适用场景 |
-|------|------|----------|----------|----------|
-| **完整版** | 调色器+动效+字体+边框样式+自动保存 | ~80KB | 较慢 | 需要事后调整 |
-| **精简版** | 固定动效+固定样式+PDF导出 | ~30KB | 快速 | 不需要调整 |
-| **纯静态** | 固定样式，无交互 | ~15KB | 最快 | 邮件发送、打印 |
+## 📦 三种生成模式 | Three Generation Modes
 
-## 🚀 安装
+| 模式 Mode | 功能 Features | 文件大小 Size | 生成速度 Speed | 适用场景 Use Case |
+|---|---|---|---|---|
+| **完整版 Full** | 调色器+动效+字体+边框样式+自动保存<br>Color picker + animation + font + border + auto-save | ~80KB | 较慢 Slow | 需要事后调整 Need later editing |
+| **精简版 Lite** | 固定动效+固定样式+PDF导出<br>Fixed animation + fixed style + PDF export | ~30KB | 快速 Fast | 不需要调整 No further changes |
+| **纯静态 Static** | 固定样式，无交互<br>Fixed style, no interaction | ~15KB | 最快 Fastest | 邮件发送、打印 Email, Print |
+
+---
+
+## 🚀 安装 | Installation
 
 将 `html-summary-generator` 文件夹复制到你的 WorkBuddy skills 目录：
+Copy the `html-summary-generator` folder to your WorkBuddy skills directory:
 
 ```bash
 # 用户级安装（推荐）
@@ -63,110 +119,3 @@ cp -r html-summary-generator ~/.workbuddy/skills/
 
 # 或项目级安装
 cp -r html-summary-generator <project>/.workbuddy/skills/
-```
-
-## 📖 使用方法
-
-### 触发词
-- 项目总结、HTML总结、生成总结、流程图、项目复盘
-- 技术文档、架构设计、接口文档
-- 工作汇报、演示文稿、PPT
-- 教程、指南、操作手册
-- 数据报告、分析报告、仪表盘
-- 对比分析、方案对比、选型报告
-- 流程文档、SOP、工作指引
-- 会议纪要、会议记录、决策记录
-
-### 交互流程
-
-1. **第一步**：选择文档类型和生成模式
-   ```
-   请输入（如 "3A" 表示汇报PPT+完整版）：
-   ```
-
-2. **第二步**：一次性回答所有选项
-   ```
-   请回答以下问题（输入序号，如 "3 3 2 1 1 1 1 7"）：
-   ```
-
-3. **第三步**：AI 自动提取内容并生成文档
-
-## 📁 文件结构
-
-```
-html-summary-generator/
-├── SKILL.md                      # Skill 说明文档
-├── README.md                     # 本文件
-├── assets/
-│   ├── html-template.html        # 完整版模板（含所有功能）
-│   ├── html-template-lite.html   # 精简版模板（固定样式）
-│   └── html-template-static.html # 纯静态模板（无交互）
-└── references/
-    └── design-spec.md            # 设计规范
-```
-
-## ⚠️ 内容生成要求
-
-### 字数要求
-用户选择的字数要求必须严格遵守：
-
-| 用户选择 | 最低字数 | 最低段落数 |
-|----------|----------|------------|
-| 500字以内 | 300字 | 3段 |
-| 500-1000字 | 800字 | 5段 |
-| 1000-2000字 | 1500字 | 8段 |
-| 2000-5000字 | 3000字 | 12段 |
-| 5000字以上 | 6000字 | 15段 |
-
-### 详细程度
-| 用户选择 | 内容要求 |
-|----------|----------|
-| 简洁版 | 每个点1-2句话 |
-| 标准版 | 每个点3-5句话 |
-| 详细版 | 每个点5-10句话 |
-| 超详细版 | 每个点10-20句话 |
-
-## 🎯 示例
-
-### 生成项目总结（完整版）
-```
-用户：帮我生成一个项目总结
-
-AI：请问您要创建哪种类型的文档？以及选择生成模式？
-    ...
-用户：1A
-
-AI：请回答以下问题（输入序号，如 "3 3 2 1 1 1 1 7"）：
-    ...
-用户：3 3 2 1 1 1 1 7 无
-
-AI：（自动从上下文提取项目信息，生成完整版文档）
-```
-
-## 📝 更新日志
-
-### v2.0.0 (2026-06-05)
-- 新增三种生成模式（完整版/精简版/纯静态）
-- 新增 12 种预设主题（含莫兰迪、洛可可、敦煌等）
-- 新增 10 种边框样式
-- 新增内容生成强制要求（字数、详细程度）
-- 优化交互流程（合并文档类型和生成模式为一步）
-- 修复选择对话框问题
-
-### v1.0.0 (2026-06-04)
-- 初始版本
-- 支持 8 种文档类型
-- 支持色相轮调色器
-- 支持背景动效和鼠标动效
-
-## 📄 许可证
-
-MIT License
-
-## 🤝 贡献
-
-欢迎提交 Issue 和 Pull Request！
-
-## 📧 联系方式
-
-- GitHub: [your-username](https://github.com/your-username)
