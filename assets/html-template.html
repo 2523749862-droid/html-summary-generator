@@ -1,0 +1,2012 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{TITLE}}</title>
+<style>
+:root {
+  --primary: #648cff;
+  --primary-light: #8aabff;
+  --primary-dark: #4070e0;
+  --secondary: #3cb478;
+  --accent: #e8a838;
+  --error: #e85454;
+  --bg-main: #0d1117;
+  --bg-card: rgba(20, 25, 35, 0.7);
+  --text-primary: #ffffff;
+  --text-secondary: #e0e6ed;
+  --text-muted: rgba(255,255,255,0.6);
+  --border-color: rgba(100,140,255,0.5);
+  --border-hover: rgba(100,140,255,0.9);
+  --glow-color: rgba(100,140,255,0.4);
+  --glass-blur: 20px;
+  --glass-bg: rgba(20, 25, 35, 0.6);
+  --card-radius: 20px;
+  --card-opacity: 0.7;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: -apple-system, "Microsoft YaHei", sans-serif; 
+  color: var(--text-secondary); 
+  background: var(--bg-main); 
+  line-height: 1.8; 
+  overflow-x: hidden; 
+  min-height: 100vh; 
+}
+p, li, td { color: var(--text-secondary); }
+h1, h2, h3, h4 { color: var(--text-primary); }
+
+/* 背景 */
+.galaxy-bg { 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: linear-gradient(135deg, var(--bg-main) 0%, #161b22 50%, #1a1e2e 100%); 
+  z-index: -2; 
+}
+.galaxy-bg::before { 
+  content: ''; 
+  position: absolute; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: radial-gradient(ellipse at 20% 50%, rgba(100,140,255,0.1) 0%, transparent 50%),
+              radial-gradient(ellipse at 80% 20%, rgba(120,80,200,0.08) 0%, transparent 40%),
+              radial-gradient(ellipse at 50% 80%, rgba(60,180,120,0.06) 0%, transparent 40%); 
+}
+.galaxy-bg::after { 
+  content: ''; 
+  position: absolute; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background-image: 
+    radial-gradient(1.5px 1.5px at 20px 30px, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 40px 70px, rgba(255,255,255,0.9), transparent),
+    radial-gradient(2px 2px at 50px 160px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(1.5px 1.5px at 90px 40px, #fff, transparent),
+    radial-gradient(2px 2px at 130px 80px, rgba(100,140,255,0.9), transparent),
+    radial-gradient(1.5px 1.5px at 160px 120px, rgba(255,255,255,0.6), transparent),
+    radial-gradient(2.5px 2.5px at 200px 50px, rgba(120,180,255,0.8), transparent),
+    radial-gradient(1.5px 1.5px at 250px 180px, rgba(255,255,255,0.7), transparent),
+    radial-gradient(2px 2px at 300px 100px, rgba(255,255,255,0.5), transparent),
+    radial-gradient(2.5px 2.5px at 350px 200px, rgba(180,120,255,0.7), transparent); 
+  background-size: 400px 300px; 
+  animation: twinkle 6s ease-in-out infinite alternate; 
+}
+@keyframes twinkle { from { opacity: 0.7; } to { opacity: 1; } }
+
+#effectCanvas { 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  pointer-events: none; 
+  z-index: 0; 
+}
+
+/* 容器 */
+.container { 
+  max-width: 1000px; 
+  margin: 0 auto; 
+  padding: 40px 20px; 
+  position: relative; 
+  z-index: 1; 
+}
+
+/* 毛玻璃卡片 - 核心样式 */
+.glass-card { 
+  background: rgba(20, 25, 35, var(--card-opacity, 0.7)); 
+  backdrop-filter: blur(var(--glass-blur, 20px)); 
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border-radius: var(--card-radius, 20px); 
+  padding: 32px; 
+  margin: 24px 0; 
+  border: 1.5px solid var(--border-color); 
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+  position: relative; 
+  overflow: hidden; 
+  page-break-inside: avoid;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+.glass-card::before { 
+  content: ''; 
+  position: absolute; 
+  top: 0; left: 0; right: 0; 
+  height: 2px; 
+  background: linear-gradient(90deg, transparent, var(--primary), var(--secondary), transparent); 
+  opacity: 0;
+  transition: opacity 0.4s ease; 
+}
+.glass-card::after {
+  content: '';
+  position: absolute;
+  top: -50%; left: -50%;
+  width: 200%; height: 200%;
+  background: radial-gradient(circle, var(--glow-color) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+}
+.glass-card:hover { 
+  border-color: var(--border-hover); 
+  box-shadow: 0 0 40px var(--glow-color), 0 20px 60px rgba(0,0,0,0.4); 
+  transform: translateY(-8px); 
+}
+.glass-card:hover::before { opacity: 1; }
+.glass-card:hover::after { opacity: 0.1; }
+
+/* 卡片类型 */
+.card-success { border-left: 4px solid var(--secondary); }
+.card-warning { border-left: 4px solid var(--accent); }
+.card-error { border-left: 4px solid var(--error); }
+.card-info { border-left: 4px solid #5890ff; }
+.card-purple { border-left: 4px solid #7850c8; }
+
+.glass-card p { color: var(--text-secondary); line-height: 1.9; margin-bottom: 12px; }
+.glass-card li { color: var(--text-secondary); margin-bottom: 6px; }
+.glass-card strong { color: var(--text-primary); }
+.glass-card h3 { color: var(--text-primary); font-size: 20px; margin-bottom: 16px; }
+
+/* Hero */
+.hero { 
+  text-align: center; 
+  padding: 80px 50px; 
+  background: linear-gradient(135deg, rgba(100,140,255,0.12) 0%, rgba(120,80,200,0.12) 100%); 
+  border-radius: 28px; 
+  margin-bottom: 50px; 
+  position: relative; 
+  overflow: hidden; 
+  border: 2px solid var(--border-color); 
+  backdrop-filter: blur(25px); 
+  -webkit-backdrop-filter: blur(25px);
+  page-break-inside: avoid;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  animation: heroAppear 1s ease-out;
+}
+@keyframes heroAppear {
+  from { opacity: 0; transform: translateY(30px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.hero:hover { 
+  border-color: var(--border-hover); 
+  box-shadow: 0 0 60px var(--glow-color), 0 20px 60px rgba(0,0,0,0.5); 
+}
+.hero h1 { 
+  font-size: 48px; 
+  font-weight: 700; 
+  color: var(--text-primary); 
+  margin-bottom: 16px; 
+  text-shadow: 0 0 30px var(--glow-color);
+}
+.hero .subtitle { font-size: 22px; color: var(--text-muted); margin-bottom: 24px; }
+.hero .meta { font-size: 14px; color: var(--text-muted); }
+
+/* 统计卡片 */
+.stats-grid { 
+  display: grid; 
+  grid-template-columns: repeat(4,1fr); 
+  gap: 20px; 
+  margin: 50px 0; 
+  page-break-inside: avoid; 
+}
+.stat-card { 
+  background: rgba(20, 25, 35, var(--card-opacity, 0.7)); 
+  backdrop-filter: blur(var(--glass-blur, 20px)); 
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border-radius: var(--card-radius, 20px); 
+  padding: 30px; 
+  text-align: center; 
+  border: 1.5px solid var(--border-color); 
+  transition: all 0.4s cubic-bezier(0.175,0.885,0.32,1.275); 
+  cursor: pointer; 
+  position: relative; 
+  overflow: hidden; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.stat-card:hover { 
+  transform: translateY(-12px) scale(1.05); 
+  box-shadow: 0 0 50px var(--glow-color), 0 25px 50px rgba(0,0,0,0.4); 
+  border-color: var(--border-hover); 
+}
+.stat-card .number { 
+  font-size: 52px; 
+  font-weight: 700; 
+  color: var(--text-primary); 
+  text-shadow: 0 0 20px var(--glow-color);
+}
+.stat-card .label { font-size: 14px; color: var(--text-muted); margin-top: 12px; }
+
+/* 章节 */
+.section { 
+  margin: 60px 0; 
+  page-break-inside: avoid; 
+}
+.section h2 { 
+  font-size: 30px; 
+  font-weight: 700; 
+  color: var(--text-primary); 
+  margin-bottom: 28px; 
+  padding-bottom: 14px; 
+  border-bottom: 2px solid var(--border-color); 
+  display: inline-block; 
+  text-shadow: 0 0 20px var(--glow-color);
+}
+.section h3 { 
+  font-size: 22px; 
+  font-weight: 600; 
+  color: var(--text-muted); 
+  margin: 28px 0 14px; 
+}
+
+/* 时间线 */
+.timeline { position: relative; padding-left: 45px; margin: 40px 0; }
+.timeline::before { 
+  content: ''; 
+  position: absolute; 
+  left: 14px; top: 0; bottom: 0; 
+  width: 3px; 
+  background: linear-gradient(to bottom, var(--primary), #7850c8, var(--accent), var(--error)); 
+  border-radius: 2px; 
+}
+.timeline-item { 
+  position: relative; 
+  margin-bottom: 30px; 
+  padding: 24px; 
+  background: rgba(20, 25, 35, var(--card-opacity, 0.7)); 
+  backdrop-filter: blur(var(--glass-blur, 20px));
+  -webkit-backdrop-filter: blur(var(--glass-blur, 20px));
+  border-radius: var(--card-radius, 16px); 
+  border: 1.5px solid var(--border-color); 
+  transition: all 0.4s ease; 
+  page-break-inside: avoid; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+.timeline-item:hover { 
+  transform: translateX(15px); 
+  box-shadow: 0 0 35px var(--glow-color), 0 15px 40px rgba(0,0,0,0.3); 
+  border-color: var(--border-hover); 
+}
+.timeline-item::before { 
+  content: ''; 
+  position: absolute; 
+  left: -38px; top: 28px; 
+  width: 18px; height: 18px; 
+  border-radius: 50%; 
+  border: 3px solid var(--bg-main); 
+}
+.timeline-item.success::before { background: var(--secondary); box-shadow: 0 0 15px var(--secondary); }
+.timeline-item.warning::before { background: var(--accent); box-shadow: 0 0 15px var(--accent); }
+.timeline-item.error::before { background: var(--error); box-shadow: 0 0 15px var(--error); }
+.timeline-item.info::before { background: #5890ff; box-shadow: 0 0 15px #5890ff; }
+.timeline-item .time { font-size: 12px; color: var(--text-muted); margin-bottom: 10px; }
+.timeline-item h4 { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+.timeline-item p { font-size: 14px; color: var(--text-secondary); line-height: 1.8; }
+
+/* 标签 */
+.tag { 
+  display: inline-block; 
+  padding: 5px 16px; 
+  border-radius: 20px; 
+  font-size: 12px; 
+  font-weight: 600; 
+  margin-right: 10px; 
+  color: #fff; 
+}
+.tag-success { background: rgba(60,180,120,0.5); border: 1px solid rgba(60,180,120,0.7); }
+.tag-error { background: rgba(232,84,84,0.5); border: 1px solid rgba(232,84,84,0.7); }
+.tag-warning { background: rgba(232,168,56,0.5); border: 1px solid rgba(232,168,56,0.7); }
+.tag-info { background: rgba(88,144,255,0.5); border: 1px solid rgba(88,144,255,0.7); }
+
+/* 表格 */
+table { 
+  width: 100%; 
+  border-collapse: collapse; 
+  background: var(--glass-bg); 
+  backdrop-filter: blur(10px);
+  border-radius: 16px; 
+  overflow: hidden; 
+  margin: 20px 0; 
+  border: 1.5px solid var(--border-color); 
+  page-break-inside: avoid; 
+}
+th { 
+  background: rgba(100,140,255,0.3); 
+  color: var(--text-primary); 
+  padding: 16px 18px; 
+  text-align: left; 
+  font-weight: 600; 
+  border-bottom: 2px solid var(--border-color); 
+}
+td { 
+  padding: 14px 18px; 
+  border-bottom: 1px solid rgba(255,255,255,0.08); 
+  color: var(--text-secondary); 
+}
+tr:hover td { background: rgba(100,140,255,0.1); }
+
+/* SVG 流程图 */
+.svg-flow { 
+  background: var(--glass-bg); 
+  backdrop-filter: blur(10px);
+  border-radius: 20px; 
+  padding: 30px; 
+  margin: 30px 0; 
+  border: 1.5px solid var(--border-color); 
+  overflow-x: auto; 
+  page-break-inside: avoid; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+/* 对比卡片 */
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin: 30px 0; page-break-inside: avoid; }
+.compare-card { 
+  padding: 28px; 
+  border-radius: 20px; 
+  text-align: center; 
+  transition: all 0.4s ease; 
+  position: relative; 
+  overflow: hidden; 
+  backdrop-filter: blur(var(--glass-blur));
+}
+.compare-card.old { 
+  background: rgba(232,84,84,0.15); 
+  border: 2px solid rgba(232,84,84,0.5); 
+}
+.compare-card.new { 
+  background: rgba(60,180,120,0.15); 
+  border: 2px solid rgba(60,180,120,0.5); 
+}
+.compare-card:hover { transform: translateY(-5px); box-shadow: 0 0 30px rgba(0,0,0,0.3); }
+.compare-card h4 { font-size: 22px; margin-bottom: 16px; color: var(--text-primary); }
+.compare-card ul { text-align: left; list-style: none; }
+.compare-card li { 
+  padding: 12px 0; 
+  border-bottom: 1px solid rgba(255,255,255,0.1); 
+  color: var(--text-secondary); 
+  transition: all 0.3s; 
+}
+.compare-card li:hover { padding-left: 10px; }
+.compare-card li::before { content: '✓ '; color: var(--secondary); font-weight: bold; }
+.compare-card.old li::before { content: '✗ '; color: var(--error); }
+
+/* 页脚 */
+.footer { 
+  text-align: center; 
+  padding: 60px 20px; 
+  color: var(--text-muted); 
+  font-size: 14px; 
+  border-top: 1px solid var(--border-color); 
+  margin-top: 80px; 
+}
+
+/* 动画 */
+@keyframes fadeInUp { from { opacity:0; transform:translateY(40px); } to { opacity:1; transform:translateY(0); } }
+@keyframes scaleIn { from { opacity:0; transform:scale(0.85); } to { opacity:1; transform:scale(1); } }
+
+.animate-on-scroll { 
+  opacity: 0; 
+  transform: translateY(40px); 
+  transition: all 0.8s cubic-bezier(0.175,0.885,0.32,1.275); 
+}
+.animate-on-scroll.visible { 
+  opacity: 1; 
+  transform: translateY(0); 
+}
+
+/* 调色器浮动按钮 */
+.color-picker-toggle { 
+  position: fixed; 
+  bottom: 30px; 
+  right: 30px; 
+  width: 60px; 
+  height: 60px; 
+  border-radius: 50%; 
+  background: linear-gradient(135deg, var(--primary), #7850c8); 
+  border: none; 
+  cursor: pointer; 
+  z-index: 1000; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  box-shadow: 0 4px 25px rgba(100,140,255,0.5); 
+  transition: all 0.3s ease; 
+}
+.color-picker-toggle:hover { 
+  transform: scale(1.15); 
+  box-shadow: 0 6px 35px rgba(100,140,255,0.7); 
+}
+.color-picker-toggle svg { width: 26px; height: 26px; fill: white; }
+
+/* 调色器面板 */
+.color-panel { 
+  position: fixed; 
+  top: 0; 
+  right: -420px; 
+  width: 400px; 
+  height: 100vh; 
+  background: rgba(15, 18, 25, 0.95); 
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-left: 1.5px solid var(--border-color); 
+  z-index: 1001; 
+  transition: right 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+  overflow-y: auto; 
+  padding: 28px; 
+}
+.color-panel.open { right: 0; }
+.color-panel-overlay { 
+  position: fixed; 
+  top: 0; left: 0; 
+  width: 100%; height: 100%; 
+  background: rgba(0,0,0,0.6); 
+  z-index: 1000; 
+  opacity: 0; 
+  visibility: hidden; 
+  transition: all 0.3s; 
+}
+.color-panel-overlay.visible { opacity: 1; visibility: visible; }
+
+.panel-header { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  margin-bottom: 24px; 
+  padding-bottom: 18px; 
+  border-bottom: 1px solid rgba(255,255,255,0.1); 
+}
+.panel-header h3 { color: var(--text-primary); font-size: 20px; font-weight: 600; }
+.panel-close { 
+  background: rgba(255,255,255,0.1); 
+  border: none; 
+  color: var(--text-muted); 
+  cursor: pointer; 
+  font-size: 20px; 
+  padding: 6px 10px; 
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+.panel-close:hover { color: var(--text-primary); background: rgba(255,255,255,0.2); }
+
+/* 标签页 */
+.panel-tabs { 
+  display: flex; 
+  gap: 4px; 
+  margin-bottom: 24px; 
+  background: rgba(255,255,255,0.05); 
+  border-radius: 12px; 
+  padding: 4px; 
+}
+.panel-tab { 
+  flex: 1; 
+  padding: 10px 14px; 
+  background: none; 
+  border: none; 
+  border-radius: 10px; 
+  color: var(--text-muted); 
+  cursor: pointer; 
+  font-size: 14px; 
+  font-weight: 500;
+  transition: all 0.2s; 
+}
+.panel-tab.active { background: var(--primary); color: white; }
+.panel-tab:hover:not(.active) { background: rgba(255,255,255,0.1); }
+
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+
+.color-section { margin-bottom: 22px; }
+.color-section label { 
+  display: block; 
+  color: var(--text-muted); 
+  font-size: 13px; 
+  margin-bottom: 8px; 
+  font-weight: 500;
+}
+
+/* 色相轮 */
+.hue-wheel-container { position: relative; width: 180px; height: 180px; margin: 0 auto 16px; cursor: crosshair; }
+#hueWheel { width: 100%; height: 100%; border-radius: 50%; }
+.hue-selector { 
+  position: absolute; 
+  width: 20px; height: 20px; 
+  border-radius: 50%; 
+  border: 3px solid white; 
+  box-shadow: 0 0 12px rgba(0,0,0,0.6); 
+  transform: translate(-50%, -50%); 
+  pointer-events: none; 
+}
+
+.sv-container { position: relative; width: 180px; height: 120px; margin: 0 auto 16px; cursor: crosshair; }
+#svPicker { width: 100%; height: 100%; border-radius: 10px; }
+.sv-selector { 
+  position: absolute; 
+  width: 16px; height: 16px; 
+  border-radius: 50%; 
+  border: 2px solid white; 
+  box-shadow: 0 0 10px rgba(0,0,0,0.6); 
+  transform: translate(-50%, -50%); 
+  pointer-events: none; 
+}
+
+.color-preview-row { display: flex; gap: 12px; align-items: center; margin-bottom: 14px; }
+.color-preview-box { width: 44px; height: 44px; border-radius: 12px; border: 2px solid rgba(255,255,255,0.2); }
+.color-input { 
+  flex: 1; 
+  background: rgba(255,255,255,0.08); 
+  border: 1px solid rgba(255,255,255,0.15); 
+  border-radius: 10px; 
+  padding: 10px 12px; 
+  color: var(--text-primary); 
+  font-family: monospace; 
+  font-size: 14px; 
+}
+.color-input:focus { outline: none; border-color: var(--primary); }
+
+.color-target-list { display: flex; flex-direction: column; gap: 8px; }
+.color-target-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  padding: 10px 12px; 
+  background: rgba(255,255,255,0.04); 
+  border-radius: 10px; 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  border: 1px solid transparent; 
+}
+.color-target-item:hover { background: rgba(255,255,255,0.08); border-color: var(--border-color); }
+.color-target-item.active { border-color: var(--primary); background: rgba(100,140,255,0.15); }
+.color-target-dot { width: 20px; height: 20px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.2); }
+.color-target-name { color: var(--text-secondary); font-size: 13px; }
+
+/* 主题按钮 */
+.theme-presets { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.theme-btn { 
+  padding: 12px; 
+  border-radius: 12px; 
+  border: 2px solid transparent; 
+  background: rgba(255,255,255,0.05); 
+  cursor: pointer; 
+  transition: all 0.2s; 
+  text-align: center; 
+}
+.theme-btn:hover { border-color: var(--border-color); background: rgba(255,255,255,0.08); }
+.theme-btn.active { border-color: var(--primary); box-shadow: 0 0 15px rgba(100,140,255,0.3); }
+.theme-btn .theme-color { width: 100%; height: 24px; border-radius: 8px; margin-bottom: 8px; }
+.theme-btn .theme-name { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
+
+/* 下拉框 */
+.effect-select { 
+  width: 100%; 
+  background: rgba(255,255,255,0.08); 
+  border: 1px solid rgba(255,255,255,0.2); 
+  border-radius: 10px; 
+  padding: 10px 12px; 
+  color: var(--text-primary); 
+  font-size: 13px; 
+  cursor: pointer;
+}
+.effect-select:focus { outline: none; border-color: var(--primary); }
+.effect-select option { 
+  background: #1a1e2e; 
+  color: #e0e6ed; 
+  padding: 8px;
+}
+
+/* 滑块 */
+.range-row { display: flex; align-items: center; gap: 12px; }
+.range-row input[type="range"] { 
+  flex: 1; 
+  accent-color: var(--primary); 
+  height: 6px; 
+  cursor: pointer;
+}
+.range-value { 
+  min-width: 40px; 
+  text-align: right; 
+  color: var(--text-muted); 
+  font-size: 12px; 
+  font-family: monospace; 
+}
+
+/* 导出按钮 */
+.export-section { margin-top: 50px; padding-top: 30px; border-top: 1px solid var(--border-color); }
+.export-btn { 
+  display: inline-flex; 
+  align-items: center; 
+  gap: 12px; 
+  padding: 16px 36px; 
+  background: linear-gradient(135deg, var(--primary), #7850c8); 
+  color: white; 
+  border: none; 
+  border-radius: 16px; 
+  font-size: 16px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  transition: all 0.3s ease; 
+  box-shadow: 0 4px 20px rgba(100,140,255,0.4); 
+}
+.export-btn:hover { 
+  transform: translateY(-4px); 
+  box-shadow: 0 8px 30px rgba(100,140,255,0.6); 
+}
+
+/* 添加段落按钮 */
+.add-paragraph-btn {
+  display: inline-flex; 
+  align-items: center; 
+  gap: 10px; 
+  padding: 14px 28px; 
+  background: var(--glass-bg);
+  backdrop-filter: blur(10px);
+  border: 2px dashed var(--border-color); 
+  border-radius: 16px; 
+  color: var(--text-muted); 
+  cursor: pointer; 
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s;
+}
+.add-paragraph-btn:hover {
+  border-color: var(--primary);
+  color: var(--text-primary);
+  background: rgba(100,140,255,0.1);
+}
+
+/* 保存提示 */
+.save-indicator {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: rgba(60,180,120,0.9);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 2000;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+.save-indicator.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* 打印样式 */
+@media print {
+  @page { size: A4; margin: 2cm; }
+  body { background: white !important; color: #333 !important; }
+  .galaxy-bg, #effectCanvas, .color-picker-toggle, .color-panel, .color-panel-overlay, .save-indicator { display: none !important; }
+  .export-section { display: none !important; }
+  .glass-card, .stat-card, .timeline-item { 
+    background: #f8f9fa !important; 
+    backdrop-filter: none !important;
+    border: 1px solid #ddd !important; 
+    box-shadow: none !important; 
+  }
+  .glass-card p, .glass-card li, .glass-card td { color: #333 !important; }
+  .glass-card strong { color: #000 !important; }
+}
+
+@media (max-width:768px) { 
+  .stats-grid { grid-template-columns: repeat(2,1fr); } 
+  .compare-grid { grid-template-columns: 1fr; } 
+  .hero h1 { font-size: 28px; }
+  .color-panel { width: 100%; right: -100%; }
+}
+</style>
+</head>
+<body>
+
+<div class="galaxy-bg"></div>
+<canvas id="effectCanvas"></canvas>
+<div class="save-indicator" id="saveIndicator">✓ 设置已保存</div>
+
+<button class="color-picker-toggle" id="colorPickerToggle" title="自定义设置">
+  <svg viewBox="0 0 24 24"><path d="M12 2C6.49 2 2 6.49 2 12s4.49 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.2-.64-1.67-.08-.1-.13-.21-.13-.33 0-.28.22-.5.5-.5H16c3.31 0 6-2.69 6-6 0-4.96-4.49-9-10-9zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 8 6.5 8 8 8.67 8 9.5 7.33 11 6.5 11zm3-4C8.67 7 8 6.33 8 5.5S8.67 4 9.5 4s1.5.67 1.5 1.5S10.33 7 9.5 7zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 4 14.5 4s1.5.67 1.5 1.5S15.33 7 14.5 7zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 8 17.5 8s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+</button>
+
+<div class="color-panel-overlay" id="colorPanelOverlay"></div>
+
+<div class="color-panel" id="colorPanel">
+  <div class="panel-header">
+    <h3>✨ 自定义设置</h3>
+    <button class="panel-close" id="colorPanelClose">✕</button>
+  </div>
+  
+  <div class="panel-tabs">
+    <button class="panel-tab active" data-tab="colors">🎨 颜色</button>
+    <button class="panel-tab" data-tab="effects">✨ 动效</button>
+    <button class="panel-tab" data-tab="fonts">📝 字体</button>
+  </div>
+  
+  <!-- 颜色标签页 -->
+  <div class="tab-content active" id="tab-colors">
+    <div class="color-section">
+      <label>色相选择</label>
+      <div class="hue-wheel-container">
+        <canvas id="hueWheel" width="180" height="180"></canvas>
+        <div class="hue-selector" id="hueSelector"></div>
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>饱和度 / 明度</label>
+      <div class="sv-container">
+        <canvas id="svPicker" width="180" height="120"></canvas>
+        <div class="sv-selector" id="svSelector"></div>
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>当前颜色</label>
+      <div class="color-preview-row">
+        <div class="color-preview-box" id="colorPreview"></div>
+        <input type="text" class="color-input" id="colorInput" value="#648cff">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>应用到</label>
+      <div class="color-target-list">
+        <div class="color-target-item active" data-var="--bg-main">
+          <div class="color-target-dot" style="background: var(--bg-main)"></div>
+          <span class="color-target-name">页面背景</span>
+        </div>
+        <div class="color-target-item" data-var="--primary">
+          <div class="color-target-dot" style="background: var(--primary)"></div>
+          <span class="color-target-name">主色调</span>
+        </div>
+        <div class="color-target-item" data-var="--secondary">
+          <div class="color-target-dot" style="background: var(--secondary)"></div>
+          <span class="color-target-name">辅助色</span>
+        </div>
+        <div class="color-target-item" data-var="--accent">
+          <div class="color-target-dot" style="background: var(--accent)"></div>
+          <span class="color-target-name">强调色</span>
+        </div>
+        <div class="color-target-item" data-var="--border-color">
+          <div class="color-target-dot" style="background: var(--border-color)"></div>
+          <span class="color-target-name">边框颜色</span>
+        </div>
+        <div class="color-target-item" data-var="--text-primary">
+          <div class="color-target-dot" style="background: var(--text-primary)"></div>
+          <span class="color-target-name">标题颜色</span>
+        </div>
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>预设主题</label>
+      <div class="theme-presets">
+        <button class="theme-btn active" data-theme="galaxy">
+          <div class="theme-color" style="background: linear-gradient(135deg, #0d1117, #648cff)"></div>
+          <span class="theme-name">银河</span>
+        </button>
+        <button class="theme-btn" data-theme="ocean">
+          <div class="theme-color" style="background: linear-gradient(135deg, #0a1628, #0ea5e9)"></div>
+          <span class="theme-name">深海</span>
+        </button>
+        <button class="theme-btn" data-theme="forest">
+          <div class="theme-color" style="background: linear-gradient(135deg, #0a1a0f, #22c55e)"></div>
+          <span class="theme-name">森林</span>
+        </button>
+        <button class="theme-btn" data-theme="sunset">
+          <div class="theme-color" style="background: linear-gradient(135deg, #1a0f0a, #f97316)"></div>
+          <span class="theme-name">日落</span>
+        </button>
+        <button class="theme-btn" data-theme="lavender">
+          <div class="theme-color" style="background: linear-gradient(135deg, #150a1a, #a855f7)"></div>
+          <span class="theme-name">薰衣草</span>
+        </button>
+        <button class="theme-btn" data-theme="rose">
+          <div class="theme-color" style="background: linear-gradient(135deg, #1a0a10, #f43f5e)"></div>
+          <span class="theme-name">玫瑰</span>
+        </button>
+        <button class="theme-btn" data-theme="cyberpunk">
+          <div class="theme-color" style="background: linear-gradient(135deg, #0a0a1a, #00ff88)"></div>
+          <span class="theme-name">赛博朋克</span>
+        </button>
+        <button class="theme-btn" data-theme="golden">
+          <div class="theme-color" style="background: linear-gradient(135deg, #1a150a, #fbbf24)"></div>
+          <span class="theme-name">黄金</span>
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- 动效标签页 -->
+  <div class="tab-content" id="tab-effects">
+    <div class="color-section">
+      <label>背景动效</label>
+      <select id="bgEffect" class="effect-select">
+        <option value="particles">✨ 粒子飘浮</option>
+        <option value="stars">⭐ 星空闪烁</option>
+        <option value="snow">❄️ 雪花飘落</option>
+        <option value="bubbles">🫧 泡泡上升</option>
+        <option value="grid">🔲 网格连线</option>
+        <option value="waves">🌊 波浪流动</option>
+        <option value="firefly">🪲 萤火虫</option>
+        <option value="matrix">💚 矩阵雨</option>
+        <option value="nebula">🌀 星云漩涡</option>
+        <option value="confetti">🎊 彩纸飘落</option>
+        <option value="none">❌ 无动效</option>
+      </select>
+    </div>
+    
+    <div class="color-section">
+      <label>动效密度: <span id="densityValue">50</span></label>
+      <div class="range-row">
+        <input type="range" id="effectDensity" min="10" max="100" value="50">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>动效速度: <span id="speedValue">50</span></label>
+      <div class="range-row">
+        <input type="range" id="effectSpeed" min="10" max="100" value="50">
+      </div>
+    </div>
+    
+    <div class="color-section" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 18px; margin-top: 18px;">
+      <label>鼠标动效</label>
+      <select id="cursorEffect" class="effect-select">
+        <option value="glow">💡 泛光跟随</option>
+        <option value="trail">✨ 拖尾光轨</option>
+        <option value="galaxy">🌀 星河轨迹</option>
+        <option value="firework">🎆 烟花点击</option>
+        <option value="sparkle">⭐ 星星闪烁</option>
+        <option value="rainbow">🌈 彩虹光环</option>
+        <option value="ripple">💫 波纹扩散</option>
+        <option value="magnetic">🧲 磁性吸引</option>
+        <option value="none">❌ 无动效</option>
+      </select>
+    </div>
+    
+    <div class="color-section">
+      <label>鼠标效果大小: <span id="cursorSizeValue">30</span></label>
+      <div class="range-row">
+        <input type="range" id="cursorSize" min="10" max="60" value="30">
+      </div>
+    </div>
+    
+    <div class="color-section" style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 18px; margin-top: 18px;">
+      <label>卡片边框样式</label>
+      <select id="cardStyle" class="effect-select">
+        <option value="glass">🪟 毛玻璃</option>
+        <option value="neon">💜 霓虹发光</option>
+        <option value="gradient">🌈 渐变边框</option>
+        <option value="solid">📏 实线边框</option>
+        <option value="dashed">📐 虚线边框</option>
+      </select>
+    </div>
+    
+    <div class="color-section">
+      <label>毛玻璃强度: <span id="blurValue">20</span>px</label>
+      <div class="range-row">
+        <input type="range" id="glassBlur" min="0" max="40" value="20">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>边框圆角: <span id="radiusValue">20</span>px</label>
+      <div class="range-row">
+        <input type="range" id="borderRadius" min="0" max="32" value="20">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>卡片透明度: <span id="cardOpacityValue">70</span>%</label>
+      <div class="range-row">
+        <input type="range" id="cardOpacity" min="20" max="95" value="70">
+      </div>
+    </div>
+  </div>
+  
+  <!-- 字体标签页 -->
+  <div class="tab-content" id="tab-fonts">
+    <div class="color-section">
+      <label>字体</label>
+      <select id="fontFamily" class="effect-select">
+        <option value='-apple-system, "Microsoft YaHei", sans-serif'>系统默认</option>
+        <option value='"Microsoft YaHei", "微软雅黑", sans-serif'>微软雅黑</option>
+        <option value='"SimSun", "宋体", serif'>宋体</option>
+        <option value='"SimHei", "黑体", sans-serif'>黑体</option>
+        <option value='"KaiTi", "楷体", serif'>楷体</option>
+        <option value='"FangSong", "仿宋", serif'>仿宋</option>
+        <option value='"Cascadia Code", "Fira Code", monospace'>等宽代码</option>
+        <option value='Arial, Helvetica, sans-serif'>Arial</option>
+        <option value='Georgia, "Times New Roman", serif'>Georgia</option>
+      </select>
+    </div>
+    
+    <div class="color-section">
+      <label>正文字号: <span id="fontSizeValue">16px</span></label>
+      <div class="range-row">
+        <input type="range" id="fontSize" min="12" max="24" value="16">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>行高: <span id="lineHeightValue">1.8</span></label>
+      <div class="range-row">
+        <input type="range" id="lineHeight" min="1.2" max="2.5" step="0.1" value="1.8">
+      </div>
+    </div>
+    
+    <div class="color-section">
+      <label>标题字号: <span id="headingSizeValue">30px</span></label>
+      <div class="range-row">
+        <input type="range" id="headingSize" min="20" max="48" value="30">
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="hero">
+  <h1>{{TITLE}}</h1>
+  <div class="subtitle">{{SUBTITLE}}</div>
+  <div class="meta">{{META}}</div>
+</div>
+
+<div class="stats-grid">
+  <div class="stat-card"><div class="number">{{STAT1_NUMBER}}</div><div class="label">{{STAT1_LABEL}}</div></div>
+  <div class="stat-card"><div class="number">{{STAT2_NUMBER}}</div><div class="label">{{STAT2_LABEL}}</div></div>
+  <div class="stat-card"><div class="number">{{STAT3_NUMBER}}</div><div class="label">{{STAT3_LABEL}}</div></div>
+  <div class="stat-card"><div class="number">{{STAT4_NUMBER}}</div><div class="label">{{STAT4_LABEL}}</div></div>
+</div>
+
+{{CONTENT}}
+
+<div style="margin: 40px 0; text-align: center;">
+  <button class="add-paragraph-btn" id="addParagraphBtn">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    添加新段落
+  </button>
+</div>
+
+<div class="export-section">
+  <button class="export-btn" id="exportPdfBtn">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+      <polyline points="14 2 14 8 20 8"></polyline>
+    </svg>
+    导出为 PDF
+  </button>
+</div>
+
+<div class="footer">
+  <p>{{FOOTER}}</p>
+</div>
+
+</div>
+
+<!-- 添加段落对话框 -->
+<div id="addParagraphModal" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(15,18,25,0.98); backdrop-filter: blur(30px); border: 1.5px solid var(--border-color); border-radius: 20px; padding: 32px; z-index: 2000; width: 500px; max-width: 90vw; box-shadow: 0 20px 60px rgba(0,0,0,0.5);">
+  <h3 style="color: var(--text-primary); margin-bottom: 20px; font-size: 20px;">添加新段落</h3>
+  
+  <div style="margin-bottom: 16px;">
+    <label style="display: block; color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">段落类型</label>
+    <div style="display: flex; gap: 10px;">
+      <button id="typeSection" class="type-btn active" style="flex: 1; padding: 10px; background: rgba(100,140,255,0.2); border: 1.5px solid var(--primary); border-radius: 10px; color: var(--text-primary); cursor: pointer; font-size: 13px;">📦 大段（新章节）</button>
+      <button id="typeCard" class="type-btn" style="flex: 1; padding: 10px; background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.2); border-radius: 10px; color: var(--text-muted); cursor: pointer; font-size: 13px;">📄 小段（卡片）</button>
+    </div>
+  </div>
+  
+  <div style="margin-bottom: 16px;">
+    <label style="display: block; color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">插入位置</label>
+    <select id="insertPosition" class="effect-select" style="width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 10px 12px; color: var(--text-primary); font-size: 13px;">
+      <option value="end" style="background: #1a1e2e; color: #e0e6ed;">末尾</option>
+    </select>
+  </div>
+  
+  <div style="margin-bottom: 16px;">
+    <label style="display: block; color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">段落标题</label>
+    <input type="text" id="newParagraphTitle" placeholder="输入段落标题" style="width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; color: var(--text-primary); font-size: 14px;">
+  </div>
+  
+  <div style="margin-bottom: 20px;">
+    <label style="display: block; color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">段落内容</label>
+    <textarea id="newParagraphContent" rows="4" placeholder="输入段落内容" style="width: 100%; background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; padding: 12px; color: var(--text-primary); font-size: 14px; resize: vertical;"></textarea>
+  </div>
+  
+  <div style="display: flex; gap: 12px; justify-content: flex-end;">
+    <button id="cancelAddParagraph" style="padding: 10px 24px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 10px; color: var(--text-secondary); cursor: pointer; font-size: 14px;">取消</button>
+    <button id="confirmAddParagraph" style="padding: 10px 24px; background: linear-gradient(135deg, var(--primary), #7850c8); border: none; border-radius: 10px; color: white; cursor: pointer; font-size: 14px; font-weight: 500;">添加</button>
+  </div>
+</div>
+<div id="addParagraphOverlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 1999;"></div>
+
+<script>
+// ========== 本地存储 ==========
+const STORAGE_KEY = 'html-doc-settings';
+
+function loadSettings() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch(e) {}
+  return null;
+}
+
+function saveSettings() {
+  const settings = {
+    theme: document.querySelector('.theme-btn.active')?.dataset.theme || 'galaxy',
+    bgEffect: document.getElementById('bgEffect').value,
+    cursorEffect: document.getElementById('cursorEffect').value,
+    effectDensity: document.getElementById('effectDensity').value,
+    effectSpeed: document.getElementById('effectSpeed').value,
+    cursorSize: document.getElementById('cursorSize').value,
+    cardStyle: document.getElementById('cardStyle').value,
+    glassBlur: document.getElementById('glassBlur').value,
+    borderRadius: document.getElementById('borderRadius').value,
+    cardOpacity: document.getElementById('cardOpacity').value,
+    fontFamily: document.getElementById('fontFamily').value,
+    fontSize: document.getElementById('fontSize').value,
+    lineHeight: document.getElementById('lineHeight').value,
+    headingSize: document.getElementById('headingSize').value,
+    colors: {
+      '--bg-main': getComputedStyle(document.documentElement).getPropertyValue('--bg-main').trim(),
+      '--primary': getComputedStyle(document.documentElement).getPropertyValue('--primary').trim(),
+      '--secondary': getComputedStyle(document.documentElement).getPropertyValue('--secondary').trim(),
+      '--accent': getComputedStyle(document.documentElement).getPropertyValue('--accent').trim(),
+      '--border-color': getComputedStyle(document.documentElement).getPropertyValue('--border-color').trim(),
+      '--text-primary': getComputedStyle(document.documentElement).getPropertyValue('--text-primary').trim(),
+    }
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+  
+  const indicator = document.getElementById('saveIndicator');
+  indicator.classList.add('show');
+  setTimeout(() => indicator.classList.remove('show'), 1500);
+}
+
+// ========== 动效系统 ==========
+const canvas = document.getElementById('effectCanvas');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let mouseX = 0, mouseY = 0;
+let cursorTrail = [];
+let currentBgEffect = 'particles';
+let currentCursorEffect = 'glow';
+let effectDensity = 50;
+let effectSpeed = 50;
+let cursorSize = 30;
+let currentCardStyle = 'glass';
+let glassBlur = 20;
+let borderRadius = 20;
+let cardOpacity = 70;
+
+function resizeCanvas() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+// 粒子类
+class Particle {
+  constructor(type) {
+    this.type = type;
+    this.reset();
+  }
+  
+  reset() {
+    this.x = Math.random() * canvas.width;
+    this.y = Math.random() * canvas.height;
+    this.size = Math.random() * 3 + 1;
+    this.speedX = (Math.random() - 0.5) * (effectSpeed / 30);
+    this.speedY = (Math.random() - 0.5) * (effectSpeed / 30);
+    this.opacity = Math.random() * 0.8 + 0.2;
+    this.life = 1;
+    this.decay = Math.random() * 0.001 + 0.0005;
+    
+    if (this.type === 'snow') {
+      this.speedX = (Math.random() - 0.5) * 0.5;
+      this.speedY = Math.random() * (effectSpeed / 25) + 0.3;
+    } else if (this.type === 'bubbles') {
+      this.speedX = (Math.random() - 0.5) * 0.3;
+      this.speedY = -(Math.random() * (effectSpeed / 25) + 0.3);
+      this.size = Math.random() * 6 + 2;
+    } else if (this.type === 'firefly') {
+      this.speedX = (Math.random() - 0.5) * 0.2;
+      this.speedY = (Math.random() - 0.5) * 0.2;
+      this.size = Math.random() * 3 + 2;
+    } else if (this.type === 'confetti') {
+      this.speedX = (Math.random() - 0.5) * 1.5;
+      this.speedY = Math.random() * 1.5 + 0.5;
+      this.rotation = Math.random() * 360;
+      this.rotSpeed = (Math.random() - 0.5) * 4;
+      this.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      this.size = Math.random() * 5 + 3;
+    } else if (this.type === 'matrix') {
+      this.speedX = 0;
+      this.speedY = Math.random() * (effectSpeed / 15) + 1;
+      this.char = String.fromCharCode(0x30A0 + Math.random() * 96);
+      this.size = 12;
+    }
+  }
+  
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.life -= this.decay;
+    
+    if (this.type === 'firefly') {
+      this.speedX += (Math.random() - 0.5) * 0.05;
+      this.speedY += (Math.random() - 0.5) * 0.05;
+      this.opacity = 0.3 + Math.sin(Date.now() * 0.003 + this.x) * 0.5;
+    }
+    
+    if (this.type === 'confetti') {
+      this.rotation += this.rotSpeed;
+      this.speedX *= 0.99;
+    }
+    
+    if (this.life <= 0 || this.x < -50 || this.x > canvas.width + 50 || this.y < -50 || this.y > canvas.height + 50) {
+      this.reset();
+      if (['snow', 'bubbles', 'confetti', 'matrix'].includes(this.type)) {
+        this.y = this.type === 'bubbles' ? canvas.height + 10 : -10;
+        this.x = Math.random() * canvas.width;
+      }
+    }
+  }
+  
+  draw() {
+    ctx.save();
+    ctx.globalAlpha = this.opacity * Math.min(this.life, 1);
+    
+    if (['particles', 'stars', 'snow', 'firefly'].includes(this.type)) {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = this.type === 'firefly' ? `rgba(255, 255, 150, ${this.opacity})` : 'rgba(100, 140, 255, 0.7)';
+      ctx.fill();
+      if (this.type === 'firefly') {
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = 'rgba(255, 255, 150, 0.5)';
+        ctx.fill();
+      }
+    } else if (this.type === 'bubbles') {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(100, 200, 255, ${this.opacity * 0.5})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else if (this.type === 'confetti') {
+      ctx.translate(this.x, this.y);
+      ctx.rotate(this.rotation * Math.PI / 180);
+      ctx.fillStyle = this.color;
+      ctx.fillRect(-this.size/2, -this.size/4, this.size, this.size/2);
+    } else if (this.type === 'matrix') {
+      ctx.font = `${this.size}px monospace`;
+      ctx.fillStyle = `rgba(0, 255, 0, ${this.opacity * 0.8})`;
+      ctx.fillText(this.char, this.x, this.y);
+    } else {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(100, 140, 255, 0.6)';
+      ctx.fill();
+    }
+    
+    ctx.restore();
+  }
+}
+
+function initParticles() {
+  particles = [];
+  const count = Math.floor(effectDensity * 1.2);
+  for (let i = 0; i < count; i++) {
+    particles.push(new Particle(currentBgEffect));
+  }
+}
+
+// 背景动效绘制
+let waveOffset = 0;
+let nebulaAngle = 0;
+
+function drawGrid() {
+  const gridSize = 60;
+  ctx.strokeStyle = 'rgba(100, 140, 255, 0.06)';
+  ctx.lineWidth = 1;
+  
+  for (let x = 0; x < canvas.width; x += gridSize) {
+    ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+  }
+  for (let y = 0; y < canvas.height; y += gridSize) {
+    ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+  }
+  
+  for (let x = 0; x < canvas.width; x += gridSize) {
+    for (let y = 0; y < canvas.height; y += gridSize) {
+      const dist = Math.sqrt((mouseX - x) ** 2 + (mouseY - y) ** 2);
+      if (dist < 200) {
+        ctx.strokeStyle = `rgba(100, 140, 255, ${0.3 * (1 - dist / 200)})`;
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(mouseX, mouseY); ctx.stroke();
+      }
+    }
+  }
+}
+
+function drawWaves() {
+  waveOffset += effectSpeed * 0.008;
+  for (let i = 0; i < 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, canvas.height);
+    for (let x = 0; x < canvas.width; x += 5) {
+      const y = canvas.height - 80 - i * 40 + Math.sin(x * 0.008 + waveOffset + i * 2) * 40;
+      ctx.lineTo(x, y);
+    }
+    ctx.lineTo(canvas.width, canvas.height);
+    ctx.closePath();
+    ctx.fillStyle = `rgba(100, 140, 255, ${0.04 + i * 0.02})`;
+    ctx.fill();
+  }
+}
+
+function drawNebula() {
+  nebulaAngle += effectSpeed * 0.0005;
+  const cx = canvas.width / 2;
+  const cy = canvas.height / 2;
+  
+  for (let i = 0; i < 5; i++) {
+    const angle = nebulaAngle + (i * Math.PI * 2 / 5);
+    const radius = 150 + i * 60;
+    const x = cx + Math.cos(angle) * radius;
+    const y = cy + Math.sin(angle) * radius;
+    
+    const gradient = ctx.createRadialGradient(x, y, 0, x, y, 80);
+    gradient.addColorStop(0, `rgba(100, 140, 255, 0.12)`);
+    gradient.addColorStop(1, 'transparent');
+    
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(x, y, 80, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
+
+// 鼠标动效
+function drawCursorEffect() {
+  if (currentCursorEffect === 'none') return;
+  
+  switch(currentCursorEffect) {
+    case 'glow':
+      const gradient = ctx.createRadialGradient(mouseX, mouseY, 0, mouseX, mouseY, cursorSize * 6);
+      gradient.addColorStop(0, 'rgba(100, 140, 255, 0.2)');
+      gradient.addColorStop(0.5, 'rgba(100, 140, 255, 0.05)');
+      gradient.addColorStop(1, 'transparent');
+      ctx.fillStyle = gradient;
+      ctx.beginPath();
+      ctx.arc(mouseX, mouseY, cursorSize * 6, 0, Math.PI * 2);
+      ctx.fill();
+      break;
+      
+    case 'trail':
+      cursorTrail.push({x: mouseX, y: mouseY, life: 1});
+      if (cursorTrail.length > 25) cursorTrail.shift();
+      
+      for (let i = 0; i < cursorTrail.length; i++) {
+        const point = cursorTrail[i];
+        point.life -= 0.04;
+        if (point.life > 0) {
+          ctx.beginPath();
+          ctx.arc(point.x, point.y, cursorSize * point.life * 0.3, 0, Math.PI * 2);
+          ctx.fillStyle = `rgba(100, 140, 255, ${point.life * 0.4})`;
+          ctx.fill();
+        }
+      }
+      cursorTrail = cursorTrail.filter(p => p.life > 0);
+      break;
+      
+    case 'galaxy':
+      cursorTrail.push({x: mouseX, y: mouseY, life: 1, angle: Math.random() * Math.PI * 2});
+      if (cursorTrail.length > 40) cursorTrail.shift();
+      
+      for (let i = 0; i < cursorTrail.length; i++) {
+        const point = cursorTrail[i];
+        point.life -= 0.025;
+        point.angle += 0.08;
+        const x = point.x + Math.cos(point.angle) * i * 0.6;
+        const y = point.y + Math.sin(point.angle) * i * 0.6;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 2, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${220 + i * 4}, 80%, 65%, ${point.life * 0.6})`;
+        ctx.fill();
+      }
+      cursorTrail = cursorTrail.filter(p => p.life > 0);
+      break;
+      
+    case 'sparkle':
+      for (let i = 0; i < 3; i++) {
+        const x = mouseX + (Math.random() - 0.5) * cursorSize * 3;
+        const y = mouseY + (Math.random() - 0.5) * cursorSize * 3;
+        const size = Math.random() * 2.5;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 255, 200, ${Math.random() * 0.8})`;
+        ctx.fill();
+      }
+      break;
+      
+    case 'rainbow':
+      const time = Date.now() * 0.003;
+      for (let i = 0; i < 8; i++) {
+        const angle = time + (i * Math.PI / 4);
+        const x = mouseX + Math.cos(angle) * cursorSize;
+        const y = mouseY + Math.sin(angle) * cursorSize;
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = `hsl(${i * 45}, 80%, 65%)`;
+        ctx.fill();
+      }
+      break;
+      
+    case 'ripple':
+      if (!window.ripples) window.ripples = [];
+      if (Math.random() < 0.1) {
+        window.ripples.push({x: mouseX, y: mouseY, radius: 0, life: 1});
+      }
+      window.ripples.forEach(r => {
+        r.radius += 2;
+        r.life -= 0.02;
+        if (r.life > 0) {
+          ctx.beginPath();
+          ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(100, 140, 255, ${r.life * 0.3})`;
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+      window.ripples = window.ripples.filter(r => r.life > 0);
+      break;
+      
+    case 'magnetic':
+      particles.forEach(p => {
+        const dist = Math.sqrt((mouseX - p.x) ** 2 + (mouseY - p.y) ** 2);
+        if (dist < 200) {
+          const force = (200 - dist) / 200;
+          p.x += (mouseX - p.x) * force * 0.02;
+          p.y += (mouseY - p.y) * force * 0.02;
+        }
+      });
+      break;
+  }
+}
+
+// 烟花效果
+let fireworks = [];
+class Firework {
+  constructor(x, y) {
+    this.x = x;
+    this.y = y;
+    this.particles = [];
+    for (let i = 0; i < 25; i++) {
+      const angle = (Math.PI * 2 / 25) * i;
+      const speed = Math.random() * 3 + 1.5;
+      this.particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: 1,
+        color: `hsl(${Math.random() * 360}, 80%, 65%)`
+      });
+    }
+  }
+  
+  update() {
+    this.particles.forEach(p => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.04;
+      p.life -= 0.015;
+    });
+    this.particles = this.particles.filter(p => p.life > 0);
+  }
+  
+  draw() {
+    this.particles.forEach(p => {
+      ctx.globalAlpha = p.life;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fillStyle = p.color;
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+}
+
+// 主动画循环
+function animate() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  if (currentBgEffect !== 'none') {
+    if (['particles', 'stars', 'snow', 'bubbles', 'firefly', 'confetti', 'matrix'].includes(currentBgEffect)) {
+      particles.forEach(p => { p.update(); p.draw(); });
+    } else if (currentBgEffect === 'grid') {
+      drawGrid();
+    } else if (currentBgEffect === 'waves') {
+      drawWaves();
+    } else if (currentBgEffect === 'nebula') {
+      drawNebula();
+    }
+  }
+  
+  drawCursorEffect();
+  
+  fireworks.forEach(f => { f.update(); f.draw(); });
+  fireworks = fireworks.filter(f => f.particles.length > 0);
+  
+  requestAnimationFrame(animate);
+}
+
+// 鼠标事件
+document.addEventListener('mousemove', (e) => {
+  mouseX = e.clientX;
+  mouseY = e.clientY;
+});
+
+document.addEventListener('click', (e) => {
+  if (currentCursorEffect === 'firework') {
+    fireworks.push(new Firework(e.clientX, e.clientY));
+  }
+});
+
+// 初始化
+initParticles();
+animate();
+
+// ========== 面板控制 ==========
+const colorPickerToggle = document.getElementById('colorPickerToggle');
+const colorPanel = document.getElementById('colorPanel');
+const colorPanelOverlay = document.getElementById('colorPanelOverlay');
+const colorPanelClose = document.getElementById('colorPanelClose');
+
+colorPickerToggle.addEventListener('click', () => { colorPanel.classList.add('open'); colorPanelOverlay.classList.add('visible'); });
+colorPanelClose.addEventListener('click', () => { colorPanel.classList.remove('open'); colorPanelOverlay.classList.remove('visible'); });
+colorPanelOverlay.addEventListener('click', () => { colorPanel.classList.remove('open'); colorPanelOverlay.classList.remove('visible'); });
+
+document.querySelectorAll('.panel-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    document.querySelectorAll('.panel-tab').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    tab.classList.add('active');
+    document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+  });
+});
+
+// ========== 色相轮 ==========
+const hueWheel = document.getElementById('hueWheel');
+const svPicker = document.getElementById('svPicker');
+let currentHue = 220, currentSat = 100, currentVal = 100;
+let activeTarget = '--bg-main';
+
+function drawHueWheel() {
+  const wCtx = hueWheel.getContext('2d');
+  const cx = 90, cy = 90, r = 80;
+  for (let angle = 0; angle < 360; angle++) {
+    const startAngle = (angle - 1) * Math.PI / 180;
+    const endAngle = (angle + 1) * Math.PI / 180;
+    wCtx.beginPath(); wCtx.moveTo(cx, cy); wCtx.arc(cx, cy, r, startAngle, endAngle); wCtx.closePath();
+    wCtx.fillStyle = `hsl(${angle}, 100%, 50%)`; wCtx.fill();
+  }
+  wCtx.beginPath(); wCtx.arc(cx, cy, r * 0.45, 0, Math.PI * 2); wCtx.fillStyle = '#0d1117'; wCtx.fill();
+}
+
+function drawSVPicker() {
+  const sCtx = svPicker.getContext('2d');
+  const w = 180, h = 120;
+  const gradH = sCtx.createLinearGradient(0, 0, w, 0);
+  gradH.addColorStop(0, '#fff'); gradH.addColorStop(1, `hsl(${currentHue}, 100%, 50%)`);
+  sCtx.fillStyle = gradH; sCtx.fillRect(0, 0, w, h);
+  const gradV = sCtx.createLinearGradient(0, 0, 0, h);
+  gradV.addColorStop(0, 'transparent'); gradV.addColorStop(1, '#000');
+  sCtx.fillStyle = gradV; sCtx.fillRect(0, 0, w, h);
+}
+
+function hsvToRgb(h, s, v) {
+  s /= 100; v /= 100;
+  const c = v * s; const x = c * (1 - Math.abs((h / 60) % 2 - 1)); const m = v - c;
+  let r, g, b;
+  if (h < 60) { r = c; g = x; b = 0; } else if (h < 120) { r = x; g = c; b = 0; } else if (h < 180) { r = 0; g = c; b = x; } else if (h < 240) { r = 0; g = x; b = c; } else if (h < 300) { r = x; g = 0; b = c; } else { r = c; g = 0; b = x; }
+  return [Math.round((r + m) * 255), Math.round((g + m) * 255), Math.round((b + m) * 255)];
+}
+
+function rgbToHex(r, g, b) { return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join(''); }
+
+function updateColor() {
+  const [r, g, b] = hsvToRgb(currentHue, currentSat, currentVal);
+  const hex = rgbToHex(r, g, b);
+  document.getElementById('colorPreview').style.background = hex;
+  document.getElementById('colorInput').value = hex;
+  document.documentElement.style.setProperty(activeTarget, hex);
+  
+  const activeItem = document.querySelector(`.color-target-item[data-var="${activeTarget}"]`);
+  if (activeItem) activeItem.querySelector('.color-target-dot').style.background = hex;
+  
+  if (activeTarget === '--bg-main') {
+    document.querySelector('.galaxy-bg').style.background = `linear-gradient(135deg, ${hex} 0%, ${hex}dd 50%, ${hex} 100%)`;
+    document.body.style.background = hex;
+  }
+  
+  saveSettings();
+}
+
+hueWheel.addEventListener('mousedown', startHueDrag);
+function startHueDrag(e) {
+  const rect = hueWheel.getBoundingClientRect();
+  function onMove(e) {
+    const x = e.clientX - rect.left - 90; const y = e.clientY - rect.top - 90;
+    currentHue = (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+    const dist = Math.min(Math.sqrt(x * x + y * y), 80);
+    document.getElementById('hueSelector').style.left = (90 + Math.cos(currentHue * Math.PI / 180) * dist) + 'px';
+    document.getElementById('hueSelector').style.top = (90 + Math.sin(currentHue * Math.PI / 180) * dist) + 'px';
+    drawSVPicker(); updateColor();
+  }
+  function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); saveSettings(); }
+  document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp); onMove(e);
+}
+
+svPicker.addEventListener('mousedown', startSVDrag);
+function startSVDrag(e) {
+  const rect = svPicker.getBoundingClientRect();
+  function onMove(e) {
+    currentSat = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+    currentVal = Math.max(0, Math.min(100, 100 - ((e.clientY - rect.top) / rect.height) * 100));
+    document.getElementById('svSelector').style.left = currentSat + '%';
+    document.getElementById('svSelector').style.top = (100 - currentVal) + '%';
+    updateColor();
+  }
+  function onUp() { document.removeEventListener('mousemove', onMove); document.removeEventListener('mouseup', onUp); saveSettings(); }
+  document.addEventListener('mousemove', onMove); document.addEventListener('mouseup', onUp); onMove(e);
+}
+
+drawHueWheel(); drawSVPicker();
+
+document.querySelectorAll('.color-target-item').forEach(item => {
+  item.addEventListener('click', () => {
+    document.querySelectorAll('.color-target-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active'); activeTarget = item.dataset.var;
+    const currentColor = getComputedStyle(document.documentElement).getPropertyValue(activeTarget).trim();
+    document.getElementById('colorInput').value = currentColor;
+    document.getElementById('colorPreview').style.background = currentColor;
+  });
+});
+
+// ========== 预设主题 ==========
+const themes = {
+  galaxy: { '--bg-main': '#0d1117', '--primary': '#648cff', '--secondary': '#3cb478', '--accent': '#e8a838', '--error': '#e85454', '--border-color': 'rgba(100,140,255,0.5)', '--text-primary': '#ffffff', '--text-secondary': '#e0e6ed', '--glow-color': 'rgba(100,140,255,0.4)' },
+  ocean: { '--bg-main': '#0a1628', '--primary': '#0ea5e9', '--secondary': '#06b6d4', '--accent': '#f59e0b', '--error': '#ef4444', '--border-color': 'rgba(14,165,233,0.5)', '--text-primary': '#e0f2fe', '--text-secondary': '#bae6fd', '--glow-color': 'rgba(14,165,233,0.4)' },
+  forest: { '--bg-main': '#0a1a0f', '--primary': '#22c55e', '--secondary': '#84cc16', '--accent': '#f97316', '--error': '#ef4444', '--border-color': 'rgba(34,197,94,0.5)', '--text-primary': '#dcfce7', '--text-secondary': '#bbf7d0', '--glow-color': 'rgba(34,197,94,0.4)' },
+  sunset: { '--bg-main': '#1a0f0a', '--primary': '#f97316', '--secondary': '#eab308', '--accent': '#ec4899', '--error': '#ef4444', '--border-color': 'rgba(249,115,22,0.5)', '--text-primary': '#fff7ed', '--text-secondary': '#fed7aa', '--glow-color': 'rgba(249,115,22,0.4)' },
+  lavender: { '--bg-main': '#150a1a', '--primary': '#a855f7', '--secondary': '#ec4899', '--accent': '#06b6d4', '--error': '#ef4444', '--border-color': 'rgba(168,85,247,0.5)', '--text-primary': '#f3e8ff', '--text-secondary': '#e9d5ff', '--glow-color': 'rgba(168,85,247,0.4)' },
+  rose: { '--bg-main': '#1a0a10', '--primary': '#f43f5e', '--secondary': '#8b5cf6', '--accent': '#14b8a6', '--error': '#ef4444', '--border-color': 'rgba(244,63,94,0.5)', '--text-primary': '#ffe4e6', '--text-secondary': '#fecdd3', '--glow-color': 'rgba(244,63,94,0.4)' },
+  cyberpunk: { '--bg-main': '#0a0a1a', '--primary': '#00ff88', '--secondary': '#ff0080', '--accent': '#00ffff', '--error': '#ff0000', '--border-color': 'rgba(0,255,136,0.5)', '--text-primary': '#00ff88', '--text-secondary': '#00cc6a', '--glow-color': 'rgba(0,255,136,0.4)' },
+  golden: { '--bg-main': '#1a150a', '--primary': '#fbbf24', '--secondary': '#f59e0b', '--accent': '#ef4444', '--error': '#dc2626', '--border-color': 'rgba(251,191,36,0.5)', '--text-primary': '#fefce8', '--text-secondary': '#fef08a', '--glow-color': 'rgba(251,191,36,0.4)' }
+};
+
+document.querySelectorAll('.theme-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const theme = themes[btn.dataset.theme];
+    if (theme) {
+      Object.entries(theme).forEach(([key, value]) => { document.documentElement.style.setProperty(key, value); });
+      document.querySelector('.galaxy-bg').style.background = `linear-gradient(135deg, ${theme['--bg-main']} 0%, ${theme['--bg-main']}dd 50%, ${theme['--bg-main']} 100%)`;
+      document.body.style.background = theme['--bg-main'];
+      document.querySelectorAll('.color-target-item').forEach(item => {
+        const varName = item.dataset.var;
+        if (theme[varName]) item.querySelector('.color-target-dot').style.background = theme[varName];
+      });
+    }
+    saveSettings();
+  });
+});
+
+// ========== 动效设置 ==========
+document.getElementById('bgEffect').addEventListener('change', (e) => {
+  currentBgEffect = e.target.value;
+  if (['particles', 'stars', 'snow', 'bubbles', 'firefly', 'confetti', 'matrix'].includes(currentBgEffect)) {
+    initParticles();
+  }
+  saveSettings();
+});
+
+document.getElementById('cursorEffect').addEventListener('change', (e) => {
+  currentCursorEffect = e.target.value;
+  cursorTrail = [];
+  window.ripples = [];
+  saveSettings();
+});
+
+document.getElementById('effectDensity').addEventListener('input', (e) => {
+  effectDensity = parseInt(e.target.value);
+  document.getElementById('densityValue').textContent = effectDensity;
+  if (['particles', 'stars', 'snow', 'bubbles', 'firefly', 'confetti', 'matrix'].includes(currentBgEffect)) {
+    initParticles();
+  }
+  saveSettings();
+});
+
+document.getElementById('effectSpeed').addEventListener('input', (e) => {
+  effectSpeed = parseInt(e.target.value);
+  document.getElementById('speedValue').textContent = effectSpeed;
+  saveSettings();
+});
+
+document.getElementById('cursorSize').addEventListener('input', (e) => {
+  cursorSize = parseInt(e.target.value);
+  document.getElementById('cursorSizeValue').textContent = cursorSize;
+  saveSettings();
+});
+
+function applyCardStyle() {
+  const root = document.documentElement;
+  const opacityValue = cardOpacity / 100;
+  
+  // 通过 CSS 变量统一控制
+  root.style.setProperty('--card-radius', borderRadius + 'px');
+  root.style.setProperty('--card-opacity', opacityValue);
+  root.style.setProperty('--glass-blur', glassBlur + 'px');
+  
+  // 根据边框样式调整
+  const cards = document.querySelectorAll('.glass-card, .stat-card, .timeline-item');
+  
+  switch(currentCardStyle) {
+    case 'glass':
+      // 毛玻璃样式 - 使用 CSS 变量
+      cards.forEach(card => {
+        card.style.borderStyle = 'solid';
+        card.style.borderWidth = '1.5px';
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+        card.style.borderImage = '';
+        card.style.background = '';
+        card.style.backdropFilter = '';
+        card.style.webkitBackdropFilter = '';
+      });
+      break;
+      
+    case 'neon':
+      // 霓虹发光样式
+      cards.forEach(card => {
+        card.style.borderStyle = 'solid';
+        card.style.borderWidth = '1.5px';
+        card.style.borderColor = 'var(--primary)';
+        card.style.boxShadow = `0 0 ${glassBlur}px var(--glow-color), inset 0 0 ${glassBlur * 0.5}px rgba(100,140,255,0.1)`;
+        card.style.background = `rgba(0, 0, 0, ${opacityValue * 0.5})`;
+        card.style.backdropFilter = `blur(${glassBlur * 0.5}px)`;
+        card.style.webkitBackdropFilter = `blur(${glassBlur * 0.5}px)`;
+        card.style.borderImage = '';
+      });
+      break;
+      
+    case 'gradient':
+      // 渐变边框样式
+      cards.forEach(card => {
+        card.style.borderStyle = 'solid';
+        card.style.borderWidth = '2px';
+        card.style.borderImage = 'linear-gradient(135deg, var(--primary), var(--secondary)) 1';
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+        card.style.background = '';
+        card.style.backdropFilter = '';
+        card.style.webkitBackdropFilter = '';
+      });
+      break;
+      
+    case 'solid':
+      // 实线边框样式
+      cards.forEach(card => {
+        card.style.borderStyle = 'solid';
+        card.style.borderWidth = '1.5px';
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+        card.style.borderImage = '';
+        card.style.background = '';
+        card.style.backdropFilter = '';
+        card.style.webkitBackdropFilter = '';
+      });
+      break;
+      
+    case 'dashed':
+      // 虚线边框样式
+      cards.forEach(card => {
+        card.style.borderStyle = 'dashed';
+        card.style.borderWidth = '1.5px';
+        card.style.borderColor = '';
+        card.style.boxShadow = '';
+        card.style.borderImage = '';
+        card.style.background = '';
+        card.style.backdropFilter = '';
+        card.style.webkitBackdropFilter = '';
+      });
+      break;
+  }
+}
+
+// 边框样式事件监听
+document.getElementById('cardStyle').addEventListener('change', (e) => {
+  currentCardStyle = e.target.value;
+  applyCardStyle();
+  saveSettings();
+});
+
+document.getElementById('glassBlur').addEventListener('input', (e) => {
+  glassBlur = parseInt(e.target.value);
+  document.getElementById('blurValue').textContent = glassBlur;
+  applyCardStyle();
+  saveSettings();
+});
+
+document.getElementById('borderRadius').addEventListener('input', (e) => {
+  borderRadius = parseInt(e.target.value);
+  document.getElementById('radiusValue').textContent = borderRadius;
+  applyCardStyle();
+  saveSettings();
+});
+
+document.getElementById('cardOpacity').addEventListener('input', (e) => {
+  cardOpacity = parseInt(e.target.value);
+  document.getElementById('cardOpacityValue').textContent = cardOpacity;
+  applyCardStyle();
+  saveSettings();
+});
+
+// ========== 字体设置 ==========
+document.getElementById('fontFamily').addEventListener('change', (e) => { document.body.style.fontFamily = e.target.value; saveSettings(); });
+document.getElementById('fontSize').addEventListener('input', (e) => { document.getElementById('fontSizeValue').textContent = e.target.value + 'px'; document.body.style.fontSize = e.target.value + 'px'; saveSettings(); });
+document.getElementById('lineHeight').addEventListener('input', (e) => { document.getElementById('lineHeightValue').textContent = e.target.value; document.body.style.lineHeight = e.target.value; saveSettings(); });
+document.getElementById('headingSize').addEventListener('input', (e) => {
+  document.getElementById('headingSizeValue').textContent = e.target.value + 'px';
+  document.querySelectorAll('.section h2').forEach(h => h.style.fontSize = e.target.value + 'px');
+  document.querySelectorAll('.section h3, .glass-card h3').forEach(h => h.style.fontSize = (parseInt(e.target.value) * 0.75) + 'px');
+  saveSettings();
+});
+
+// ========== 添加段落 ==========
+let currentParagraphType = 'section'; // section 或 card
+
+// 打开对话框时更新插入位置选项
+document.getElementById('addParagraphBtn').addEventListener('click', () => {
+  updateInsertPositions();
+  document.getElementById('addParagraphModal').style.display = 'block';
+  document.getElementById('addParagraphOverlay').style.display = 'block';
+});
+
+// 更新插入位置选项
+function updateInsertPositions() {
+  const select = document.getElementById('insertPosition');
+  select.innerHTML = '<option value="end" style="background: #1a1e2e; color: #e0e6ed;">末尾</option>';
+  
+  const sections = document.querySelectorAll('.section');
+  sections.forEach((section, index) => {
+    const h2 = section.querySelector('h2');
+    if (h2) {
+      const option = document.createElement('option');
+      option.value = index;
+      option.textContent = `在"${h2.textContent.substring(0, 15)}..."之后`;
+      option.style.background = '#1a1e2e';
+      option.style.color = '#e0e6ed';
+      select.appendChild(option);
+    }
+  });
+}
+
+// 段落类型切换
+document.getElementById('typeSection').addEventListener('click', () => {
+  currentParagraphType = 'section';
+  document.getElementById('typeSection').style.background = 'rgba(100,140,255,0.2)';
+  document.getElementById('typeSection').style.borderColor = 'var(--primary)';
+  document.getElementById('typeSection').style.color = 'var(--text-primary)';
+  document.getElementById('typeCard').style.background = 'rgba(255,255,255,0.05)';
+  document.getElementById('typeCard').style.borderColor = 'rgba(255,255,255,0.2)';
+  document.getElementById('typeCard').style.color = 'var(--text-muted)';
+});
+
+document.getElementById('typeCard').addEventListener('click', () => {
+  currentParagraphType = 'card';
+  document.getElementById('typeCard').style.background = 'rgba(100,140,255,0.2)';
+  document.getElementById('typeCard').style.borderColor = 'var(--primary)';
+  document.getElementById('typeCard').style.color = 'var(--text-primary)';
+  document.getElementById('typeSection').style.background = 'rgba(255,255,255,0.05)';
+  document.getElementById('typeSection').style.borderColor = 'rgba(255,255,255,0.2)';
+  document.getElementById('typeSection').style.color = 'var(--text-muted)';
+});
+
+document.getElementById('cancelAddParagraph').addEventListener('click', () => {
+  document.getElementById('addParagraphModal').style.display = 'none';
+  document.getElementById('addParagraphOverlay').style.display = 'none';
+});
+
+document.getElementById('addParagraphOverlay').addEventListener('click', () => {
+  document.getElementById('addParagraphModal').style.display = 'none';
+  document.getElementById('addParagraphOverlay').style.display = 'none';
+});
+
+document.getElementById('confirmAddParagraph').addEventListener('click', () => {
+  const title = document.getElementById('newParagraphTitle').value.trim();
+  const content = document.getElementById('newParagraphContent').value.trim();
+  const position = document.getElementById('insertPosition').value;
+  
+  if (!title || !content) { alert('请填写标题和内容'); return; }
+  
+  let newElement;
+  
+  if (currentParagraphType === 'section') {
+    // 大段：创建新的 section
+    const sections = document.querySelectorAll('.section');
+    const sectionCount = sections.length;
+    const numStr = ['一','二','三','四','五','六','七','八','九','十'][sectionCount] || (sectionCount + 1);
+    
+    newElement = document.createElement('div');
+    newElement.className = 'section animate-on-scroll visible';
+    newElement.innerHTML = `<h2>${numStr}、${title}</h2><div class="glass-card"><p>${content.replace(/\n/g, '</p><p>')}</p></div>`;
+  } else {
+    // 小段：只创建卡片
+    newElement = document.createElement('div');
+    newElement.className = 'glass-card animate-on-scroll visible';
+    newElement.innerHTML = `<h3>${title}</h3><p>${content.replace(/\n/g, '</p><p>')}</p>`;
+  }
+  
+  // 插入到指定位置
+  if (position === 'end') {
+    const container = document.querySelector('.container');
+    const addBtn = document.querySelector('.add-paragraph-btn').parentElement;
+    container.insertBefore(newElement, addBtn);
+  } else {
+    const targetSection = document.querySelectorAll('.section')[parseInt(position)];
+    if (targetSection) {
+      // 如果是小段，插入到该section内部；如果是大段，插入到该section之后
+      if (currentParagraphType === 'card') {
+        targetSection.appendChild(newElement);
+      } else {
+        targetSection.parentNode.insertBefore(newElement, targetSection.nextSibling);
+      }
+    }
+  }
+  
+  // 更新章节编号（仅对大段）
+  if (currentParagraphType === 'section') {
+    updateSectionNumbers();
+  }
+  
+  // 应用当前卡片样式
+  applyCardStyle();
+  
+  // 关闭对话框
+  document.getElementById('addParagraphModal').style.display = 'none';
+  document.getElementById('addParagraphOverlay').style.display = 'none';
+  document.getElementById('newParagraphTitle').value = '';
+  document.getElementById('newParagraphContent').value = '';
+  
+  // 重新初始化滚动动画
+  const observer2 = new IntersectionObserver((entries) => {
+    entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.animate-on-scroll:not(.visible)').forEach(el => observer2.observe(el));
+});
+
+// 更新章节编号
+function updateSectionNumbers() {
+  const sections = document.querySelectorAll('.section');
+  sections.forEach((section, index) => {
+    const h2 = section.querySelector('h2');
+    if (h2) {
+      const numStr = ['一','二','三','四','五','六','七','八','九','十'][index] || (index + 1);
+      const titleText = h2.textContent.replace(/^[一二三四五六七八九十]+、/, '').replace(/^\d+、/, '');
+      h2.textContent = `${numStr}、${titleText}`;
+    }
+  });
+}
+
+// ========== PDF导出 ==========
+document.getElementById('exportPdfBtn').addEventListener('click', () => { window.print(); });
+
+// ========== 滚动动画 ==========
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.animate-on-scroll').forEach(el => observer.observe(el));
+
+// ========== 加载保存的设置 ==========
+function applySavedSettings() {
+  const settings = loadSettings();
+  if (!settings) return;
+  
+  if (settings.theme) {
+    const themeBtn = document.querySelector(`.theme-btn[data-theme="${settings.theme}"]`);
+    if (themeBtn) themeBtn.click();
+  }
+  
+  if (settings.bgEffect) {
+    document.getElementById('bgEffect').value = settings.bgEffect;
+    currentBgEffect = settings.bgEffect;
+  }
+  if (settings.cursorEffect) {
+    document.getElementById('cursorEffect').value = settings.cursorEffect;
+    currentCursorEffect = settings.cursorEffect;
+  }
+  if (settings.effectDensity) {
+    document.getElementById('effectDensity').value = settings.effectDensity;
+    document.getElementById('densityValue').textContent = settings.effectDensity;
+    effectDensity = parseInt(settings.effectDensity);
+  }
+  if (settings.effectSpeed) {
+    document.getElementById('effectSpeed').value = settings.effectSpeed;
+    document.getElementById('speedValue').textContent = settings.effectSpeed;
+    effectSpeed = parseInt(settings.effectSpeed);
+  }
+  if (settings.cursorSize) {
+    document.getElementById('cursorSize').value = settings.cursorSize;
+    document.getElementById('cursorSizeValue').textContent = settings.cursorSize;
+    cursorSize = parseInt(settings.cursorSize);
+  }
+  if (settings.cardStyle) {
+    document.getElementById('cardStyle').value = settings.cardStyle;
+    currentCardStyle = settings.cardStyle;
+  }
+  if (settings.glassBlur) {
+    document.getElementById('glassBlur').value = settings.glassBlur;
+    document.getElementById('blurValue').textContent = settings.glassBlur;
+    glassBlur = parseInt(settings.glassBlur);
+  }
+  if (settings.borderRadius) {
+    document.getElementById('borderRadius').value = settings.borderRadius;
+    document.getElementById('radiusValue').textContent = settings.borderRadius;
+    borderRadius = parseInt(settings.borderRadius);
+  }
+  if (settings.cardOpacity) {
+    document.getElementById('cardOpacity').value = settings.cardOpacity;
+    document.getElementById('cardOpacityValue').textContent = settings.cardOpacity;
+    cardOpacity = parseInt(settings.cardOpacity);
+  }
+  if (settings.fontFamily) {
+    document.getElementById('fontFamily').value = settings.fontFamily;
+    document.body.style.fontFamily = settings.fontFamily;
+  }
+  if (settings.fontSize) {
+    document.getElementById('fontSize').value = settings.fontSize;
+    document.getElementById('fontSizeValue').textContent = settings.fontSize + 'px';
+    document.body.style.fontSize = settings.fontSize + 'px';
+  }
+  if (settings.lineHeight) {
+    document.getElementById('lineHeight').value = settings.lineHeight;
+    document.getElementById('lineHeightValue').textContent = settings.lineHeight;
+    document.body.style.lineHeight = settings.lineHeight;
+  }
+  if (settings.headingSize) {
+    document.getElementById('headingSize').value = settings.headingSize;
+    document.getElementById('headingSizeValue').textContent = settings.headingSize + 'px';
+    document.querySelectorAll('.section h2').forEach(h => h.style.fontSize = settings.headingSize + 'px');
+  }
+  
+  if (settings.colors) {
+    Object.entries(settings.colors).forEach(([key, value]) => {
+      document.documentElement.style.setProperty(key, value);
+    });
+    if (settings.colors['--bg-main']) {
+      document.querySelector('.galaxy-bg').style.background = `linear-gradient(135deg, ${settings.colors['--bg-main']} 0%, ${settings.colors['--bg-main']}dd 50%, ${settings.colors['--bg-main']} 100%)`;
+      document.body.style.background = settings.colors['--bg-main'];
+    }
+  }
+  
+  if (['particles', 'stars', 'snow', 'bubbles', 'firefly', 'confetti', 'matrix'].includes(currentBgEffect)) {
+    initParticles();
+  }
+  
+  setTimeout(applyCardStyle, 100);
+}
+
+applySavedSettings();
+</script>
+
+</body>
+</html>
